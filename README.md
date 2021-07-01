@@ -1,3 +1,8 @@
+注意，此版本適用於已佔用80,443端口的環境，如果你的環境是新的，建議使用原腳本安裝
+傳送門
+https://github.com/mack-a/v2ray-agent
+
+
 # v2ray-agent
 
 > [感谢 JetBrains 提供的非商业开源软件开发授权](https://www.jetbrains.com/?from=v2ray-agent)
