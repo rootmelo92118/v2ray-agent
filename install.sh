@@ -639,7 +639,7 @@ initTLSNginxConfig() {
 		# 修改配置
 		echoContent green "\n ---> 配置Nginx"
 		touch /etc/nginx/conf.d/alone.conf
-		echo "server {listen 80;listen [::]:80;server_name ${domain};root /usr/share/nginx/html;location ~ /.well-known {allow all;}location /test {return 200 'fjkvymb6len';}}" >/etc/nginx/conf.d/alone.conf
+		echo "server {listen 8880;listen [::]:8880;server_name ${domain};root /usr/share/nginx/html;location ~ /.well-known {allow all;}location /test {return 200 'fjkvymb6len';}}" >/etc/nginx/conf.d/alone.conf
 		# 启动nginx
 		handleNginx start
 		echoContent yellow "\n检查IP是否设置为当前VPS"
@@ -647,7 +647,7 @@ initTLSNginxConfig() {
 		# 测试nginx
 		echoContent yellow "\n检查Nginx是否正常访问"
 		sleep 0.5
-		domainResult=$(curl -s "${domain}/test" --resolve "${domain}:80:${pingIP}" | grep fjkvymb6len)
+		domainResult=$(curl -s "${domain}/test" --resolve "${domain}:8880:${pingIP}" | grep fjkvymb6len)
 		if [[ -n ${domainResult} ]]; then
 			handleNginx stop
 			echoContent green "\n ---> Nginx配置成功"
@@ -663,8 +663,8 @@ updateRedirectNginxConf() {
 
 	cat <<EOF >/etc/nginx/conf.d/alone.conf
 server {
-	listen 80;
-	listen [::]:80;
+	listen 8880;
+	listen [::]:8880;
 	server_name ${domain};
 	# shellcheck disable=SC2154
 	return 301 https://${domain}$request_uri;
@@ -818,8 +818,8 @@ initNginxConfig() {
 
 	cat <<EOF >/etc/nginx/conf.d/alone.conf
 server {
-    listen 80;
-    listen [::]:80;
+    listen 8880;
+    listen [::]:8880;
     server_name ${domain};
     root /usr/share/nginx/html;
     location ~ /.well-known {allow all;}
@@ -1840,7 +1840,7 @@ EOF
 {
   "inbounds":[
     {
-      "port": 443,
+      "port": 8443,
       "protocol": "vless",
       "tag":"VLESSTCP",
       "settings": {
@@ -1881,7 +1881,7 @@ EOF
 {
 "inbounds":[
 {
-  "port": 443,
+  "port": 8443,
   "protocol": "vless",
   "tag":"VLESSTCP",
   "settings": {
@@ -2215,7 +2215,7 @@ EOF
 {
 "inbounds":[
 {
-  "port": 443,
+  "port": 8443,
   "protocol": "vless",
   "tag":"VLESSTCP",
   "settings": {
@@ -2330,7 +2330,7 @@ defaultBase64Code() {
 		port=$(echo "${hostPort}" | awk -F "[:]" '{print $2}')
 	else
 		host=${hostPort}
-		port=443
+		port=8443
 	fi
 
 	local path=$5
@@ -2662,8 +2662,8 @@ addCorePort() {
 	echoContent red "\n=============================================================="
 	echoContent yellow "# 注意事项\n"
 	echoContent yellow "支持批量添加"
-	echoContent yellow "不影响443端口的使用"
-	echoContent yellow "查看帐号时，只会展示默认端口443的帐号"
+	echoContent yellow "不影响8443端口的使用"
+	echoContent yellow "查看帐号时，只会展示默认端口8443的帐号"
 	echoContent yellow "不允许有特殊字符，注意逗号的格式"
 	echoContent yellow "录入示例:2053,2083,2087\n"
 
@@ -2685,7 +2685,7 @@ addCorePort() {
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1",
-        "port": 443,
+        "port": 8443,
         "network": "tcp",
         "followRedirect": false
       },
@@ -3433,18 +3433,18 @@ setDokodemoDoorUnblockNetflixOutbounds() {
 	read -r -p "请输入解锁Netflix vps的IP:" setIP
 	if [[ -n "${setIP}" ]]; then
 
-		unInstallOutbounds netflix-80
-		unInstallOutbounds netflix-443
+		unInstallOutbounds netflix-8880
+		unInstallOutbounds netflix-8443
 
-		outbounds=$(jq -r '.outbounds += [{"tag":"netflix-80","protocol":"freedom","settings":{"domainStrategy":"AsIs","redirect":"'${setIP}':22387"}},{"tag":"netflix-443","protocol":"freedom","settings":{"domainStrategy":"AsIs","redirect":"'${setIP}':22388"}}]' ${configPath}10_ipv4_outbounds.json)
+		outbounds=$(jq -r '.outbounds += [{"tag":"netflix-8880","protocol":"freedom","settings":{"domainStrategy":"AsIs","redirect":"'${setIP}':22387"}},{"tag":"netflix-8443","protocol":"freedom","settings":{"domainStrategy":"AsIs","redirect":"'${setIP}':22388"}}]' ${configPath}10_ipv4_outbounds.json)
 
 		echo "${outbounds}"|jq . >${configPath}10_ipv4_outbounds.json
 
 		if [[ -f "${configPath}09_routing.json" ]] ;then
-			unInstallRouting netflix-80
-			unInstallRouting netflix-443
+			unInstallRouting netflix-8880
+			unInstallRouting netflix-8443
 
-			local routing=$(jq -r '.routing.rules += [{"type":"field","port":80,"domain":["ip.sb","geosite:netflix"],"outboundTag":"netflix-80"},{"type":"field","port":443,"domain":["ip.sb","geosite:netflix"],"outboundTag":"netflix-443"}]' ${configPath}09_routing.json)
+			local routing=$(jq -r '.routing.rules += [{"type":"field","port":8880,"domain":["ip.sb","geosite:netflix"],"outboundTag":"netflix-8880"},{"type":"field","port":8443,"domain":["ip.sb","geosite:netflix"],"outboundTag":"netflix-8443"}]' ${configPath}09_routing.json)
 			echo "${routing}"|jq . >${configPath}09_routing.json
 		else
 			cat <<EOF >${configPath}09_routing.json
@@ -3454,21 +3454,21 @@ setDokodemoDoorUnblockNetflixOutbounds() {
     "rules": [
       {
         "type": "field",
-        "port": 80,
+        "port": 8880,
         "domain": [
           "ip.sb",
           "geosite:netflix"
         ],
-        "outboundTag": "netflix-80"
+        "outboundTag": "netflix-8880"
       },
       {
         "type": "field",
-        "port": 443,
+        "port": 8443,
         "domain": [
           "ip.sb",
           "geosite:netflix"
         ],
-        "outboundTag": "netflix-443"
+        "outboundTag": "netflix-8443"
       }
     ]
   }
@@ -3503,7 +3503,7 @@ setDokodemoDoorUnblockNetflixInbounds() {
       "protocol": "dokodemo-door",
       "settings": {
         "address": "0.0.0.0",
-        "port": 80,
+        "port": 8880,
         "network": "tcp",
         "followRedirect": false
       },
@@ -3513,7 +3513,7 @@ setDokodemoDoorUnblockNetflixInbounds() {
           "http"
         ]
       },
-      "tag": "unblock-80"
+      "tag": "unblock-8880"
     },
     {
       "listen": "0.0.0.0",
@@ -3521,7 +3521,7 @@ setDokodemoDoorUnblockNetflixInbounds() {
       "protocol": "dokodemo-door",
       "settings": {
         "address": "0.0.0.0",
-        "port": 443,
+        "port": 8443,
         "network": "tcp",
         "followRedirect": false
       },
@@ -3531,7 +3531,7 @@ setDokodemoDoorUnblockNetflixInbounds() {
           "tls"
         ]
       },
-      "tag": "unblock-443"
+      "tag": "unblock-8443"
     }
   ]
 }
@@ -3570,8 +3570,8 @@ EOF
         "source": [],
         "type": "field",
         "inboundTag": [
-          "unblock-80",
-          "unblock-443"
+          "unblock-8880",
+          "unblock-8443"
         ],
         "outboundTag": "direct"
       },
@@ -3581,8 +3581,8 @@ EOF
         ],
         "type": "field",
         "inboundTag": [
-          "unblock-80",
-          "unblock-443"
+          "unblock-8880",
+          "unblock-8443"
         ],
         "outboundTag": "blackhole-out"
       }
@@ -3612,10 +3612,10 @@ EOF
 # 移除任意门解锁Netflix
 removeDokodemoDoorUnblockNetflix() {
 
-	unInstallOutbounds netflix-80
-	unInstallOutbounds netflix-443
-	unInstallRouting netflix-80
-	unInstallRouting netflix-443
+	unInstallOutbounds netflix-8880
+	unInstallOutbounds netflix-8443
+	unInstallRouting netflix-8880
+	unInstallRouting netflix-8443
 	rm -rf ${configPath}01_netflix_inbounds.json
 
 	reloadCore
@@ -4073,9 +4073,11 @@ subscribe() {
 menu() {
 	cd "$HOME" || exit
 	echoContent red "\n=============================================================="
-	echoContent green "作者：mack-a"
+	echoContent green "原作者：mack-a"
+	echoContent green "修改者：rootmelo92118"
 	echoContent green "当前版本：v2.5.13"
-	echoContent green "Github：https://github.com/mack-a/v2ray-agent"
+	echoContent green "原版代碼倉庫Github：https://github.com/mack-a/v2ray-agent"
+	echoContent green "此版代碼倉庫Github：https://github.com/rootmelo92118/v2ray-agent"
 	echoContent green "描述：八合一共存脚本\c"
 	showInstallStatus
 	echoContent red "\n=============================================================="
