@@ -3551,7 +3551,7 @@ customXrayInstall() {
 		echoContent red " ---> 不可为空"
 		customXrayInstall
 	elif [[ "${selectCustomInstallType}" =~ ^[0-5]+$ ]]; then
-		cleanUp v2rayClean
+		#cleanUp v2rayClean
 		totalProgress=17
 		installTools 1
 		# 申请tls
@@ -3572,7 +3572,7 @@ customXrayInstall() {
 		installXray 8
 		installXrayService 9
 		initXrayConfig custom 10
-		cleanUp v2rayDel
+		#cleanUp v2rayDel
 		if echo "${selectCustomInstallType}" | grep -q 4; then
 			installTrojanGo 11
 			installTrojanService 12
