@@ -3829,8 +3829,11 @@ customXrayInstall() {
 		customXrayInstall
 	elif [[ "${selectCustomInstallType}" =~ ^[0-5]+$ ]]; then
 		#cleanUp v2rayClean
+		echo "1"
 		totalProgress=17
+		echo "2"
 		installTools 1
+		echo "3"
 		# 申请tls
 		initTLSNginxConfig 2
 		installTLS 3
