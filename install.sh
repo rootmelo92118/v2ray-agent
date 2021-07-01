@@ -638,8 +638,9 @@ initTLSNginxConfig() {
 	else
 		# 修改配置
 		echoContent green "\n ---> 配置Nginx"
-		touch /etc/nginx/conf.d/alone.conf
-		echo "server {listen 8880;listen [::]:8880;server_name ${domain};root /usr/share/nginx/html;location ~ /.well-known {allow all;}location /test {return 200 'fjkvymb6len';}}" >/etc/nginx/conf.d/alone.conf
+		rm /etc/nginx/conf.d/default.conf
+		touch /etc/nginx/conf.d/default.conf
+		echo "server {listen 8880;listen [::]:8880;server_name ${domain};root /usr/share/nginx/html;location ~ /.well-known {allow all;}location /test {return 200 'fjkvymb6len';}}" >/etc/nginx/conf.d/default.conf
 		# 启动nginx
 		handleNginx start
 		echoContent yellow "\n检查IP是否设置为当前VPS"
